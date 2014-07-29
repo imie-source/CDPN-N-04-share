@@ -22,11 +22,13 @@ public class TPJDBC {
 			throw new RuntimeException(e);
 		}
 	
-		insert("Monroe", "Marilyn",dateNaiss );
-
+		Integer id= insert("Monroe", "Marilyn2",dateNaiss );
+		update(id, "Monroe", "Marilyn3", dateNaiss);
+		delete(id);
+		
 	}
 
-	private static void insert(String nom, String prenom, Date dateNaiss) {
+	private static void delete(Integer id) {
 		Connection connection = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -36,10 +38,9 @@ public class TPJDBC {
 					"postgres");
 			statement = connection.createStatement();
 			String query = String
-					.format("INSERT into personne (nom,prenom,datenaiss) values ('%s','%s','%tF')",
-							nom, prenom, dateNaiss);
-			Integer nbLigneInserted = statement.executeUpdate(query);
-			System.out.format("%d lignes insérée(s)", nbLigneInserted);
+					.format("DELETE from personne WHERE id=%d",id);
+			Integer nbLigneDeleted = statement.executeUpdate(query);
+			System.out.format("%d lignes supprimée(s)", nbLigneDeleted );
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
@@ -57,6 +58,79 @@ public class TPJDBC {
 				throw new RuntimeException(e);
 			}
 		}
+	}
+
+	
+	private static Integer insert(String nom, String prenom, Date dateNaiss) {
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		Integer retour = null;
+		try {
+			connection = DriverManager.getConnection(
+					"jdbc:postgresql://localhost:5432/imie", "postgres",
+					"postgres");
+			statement = connection.createStatement();
+			String query = String
+					.format("INSERT into personne (nom,prenom,datenaiss) values ('%s','%s','%tF') returning id",
+							nom, prenom, dateNaiss);
+			resultSet =  statement.executeQuery(query);
+			resultSet.next();
+			System.out.format("personne insérée avec l'id %d\n", resultSet.getInt("id"));
+			retour = resultSet.getInt("id");
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				if (resultSet != null && !resultSet.isClosed()) {
+					resultSet.close();
+				}
+				if (statement != null && !statement.isClosed()) {
+					statement.close();
+				}
+				if (connection != null && !connection.isClosed()) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return retour;
+	}
+	
+	private static void update(Integer id,String nom, String prenom, Date dateNaiss) {
+		Connection connection = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		Integer retour = null;
+		try {
+			connection = DriverManager.getConnection(
+					"jdbc:postgresql://localhost:5432/imie", "postgres",
+					"postgres");
+			statement = connection.createStatement();
+			String query = String
+					.format("UPDATE personne set nom='%s', prenom='%s', datenaiss='%tF' WHERE id =%d",
+							nom, prenom, dateNaiss,id);
+			Integer nbLigneUpdated=  statement.executeUpdate(query);
+			System.out.format("nb de personne modifiée(s) %d\n", nbLigneUpdated);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		} finally {
+			try {
+				if (resultSet != null && !resultSet.isClosed()) {
+					resultSet.close();
+				}
+				if (statement != null && !statement.isClosed()) {
+					statement.close();
+				}
+				if (connection != null && !connection.isClosed()) {
+					connection.close();
+				}
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
 	}
 
 	private static void findByNomAndPrenom(String nom, String prenom) {
