@@ -7,6 +7,9 @@ public class PersonneDTO {
 	private String nom;
 	private String prenom;
 	private Date dateNaiss;
+	
+	private PromotionDTO promotionDTO;
+	
 	public Integer getId() {
 		return id;
 	}
@@ -30,6 +33,12 @@ public class PersonneDTO {
 	}
 	public void setDateNaiss(Date dateNaiss) {
 		this.dateNaiss = dateNaiss;
+	}
+	public PromotionDTO getPromotionDTO() {
+		return promotionDTO;
+	}
+	public void setPromotionDTO(PromotionDTO promotionDTO) {
+		this.promotionDTO = promotionDTO;
 	}
 	
 	
