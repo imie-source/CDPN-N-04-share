@@ -1,6 +1,22 @@
-.classpath
-.project
 *.class
+
+#merge conflict
+*.orig
+
+#gedit
 *.*~
 .*~
+
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+#eclipse
 .settings
+.classpath
+.project
+build
+bin
+
