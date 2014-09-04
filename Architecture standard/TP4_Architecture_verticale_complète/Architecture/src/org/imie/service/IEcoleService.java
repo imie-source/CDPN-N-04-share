@@ -4,9 +4,10 @@ import java.util.List;
 
 import org.imie.DTO.PersonneDTO;
 import org.imie.DTO.PromotionDTO;
+import org.imie.Transaction.ITransactional;
 import org.imie.exception.ImieException;
 
-public interface IEcoleService {
+public interface IEcoleService extends ITransactional {
 	
 
 	public abstract PersonneDTO insertPersonne(PersonneDTO dtoToInsert) throws ImieException;

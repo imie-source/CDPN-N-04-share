@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.imie.DTO.PromotionDTO;
+import org.imie.Transaction.AJDBC;
 import org.imie.exception.ImieException;
 import org.imie.factory.AbstractFactory;
 
@@ -21,9 +22,8 @@ import org.imie.factory.AbstractFactory;
 public class PromotionDAO extends AJDBC implements IPromotionDAO {
 
 	AbstractFactory factory;
-	
-	
-	
+
+
 	public PromotionDAO(AbstractFactory factory) {
 		super();
 		this.factory = factory;
@@ -56,39 +56,44 @@ public class PromotionDAO extends AJDBC implements IPromotionDAO {
 	}
 
 	@Override
-	public Integer delete(PromotionDTO dtoToDelete, Connection connection)
-			throws ImieException {
+	public Integer delete(PromotionDTO dtoToDelete) throws ImieException {
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		Integer retour = null;
-		Boolean slave = false;
+		// Boolean slave = false;
 
 		try {
-			if (connection != null) {
-				slave = true;
-			} else {
-				connection = openConnection();
-				connection.setAutoCommit(false);
-			}
+			// if (connection != null) {
+			// slave = true;
+			// } else {
+			// connection = openConnection();
+			// connection.setAutoCommit(false);
+			// }
 
 			String query = "DELETE from promotion WHERE id=?";
-			statement = connection.prepareStatement(query);
+			statement = getConnection().prepareStatement(query);
 			statement.setInt(1, dtoToDelete.getId());
 
 			retour = statement.executeUpdate();
-			if (!slave) {
-				connection.commit();
-			}
+			// if (!slave) {
+			// connection.commit();
+			// }
 
 		} catch (SQLException e) {
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				throw new ImieException(e);
-			}
-			throw new RuntimeException(e);
+			// ImieException rollbackException = null;
+			// if (!slave) {
+			//
+			// try {
+			// connection.rollback();
+			// } catch (SQLException e1) {
+			// rollbackException = new ImieException(e1);
+			// }
+			// }
+			// throw new RuntimeException(
+			// rollbackException != null ? rollbackException : e);
 		} finally {
-			closeJDBC(slave ? null : connection, statement, resultSet);
+			// closeJDBC(slave ? null : connection, statement, resultSet);
+			closeJDBC(null, statement, resultSet);
 		}
 		return retour;
 
@@ -99,10 +104,10 @@ public class PromotionDAO extends AJDBC implements IPromotionDAO {
 	 * 
 	 * @see org.imie.DAO.IDAO#delete(java.lang.Object)
 	 */
-	@Override
-	public Integer delete(PromotionDTO dtoToDelete) throws ImieException {
-		return delete(dtoToDelete, null);
-	}
+	// @Override
+	// public Integer delete(PromotionDTO dtoToDelete) throws ImieException {
+	// return delete(dtoToDelete, null);
+	// }
 
 	/*
 	 * (non-Javadoc)
@@ -122,12 +127,12 @@ public class PromotionDAO extends AJDBC implements IPromotionDAO {
 	 */
 	@Override
 	public List<PromotionDTO> findByDTO(PromotionDTO dtoSearched) {
-		Connection connection = null;
+		// Connection connection = null;
 		PreparedStatement statement = null;
 		ResultSet resultSet = null;
 		List<PromotionDTO> retour = new ArrayList<PromotionDTO>();
 		try {
-			connection = openConnection();
+			// connection = openConnection();
 
 			List<ParamJDBC> paramsList = new ArrayList<ParamJDBC>();
 			if (dtoSearched.getId() != null) {
@@ -151,7 +156,7 @@ public class PromotionDAO extends AJDBC implements IPromotionDAO {
 			String query = "SELECT id,libelle FROM promotion "
 					.concat(whereQuery);
 
-			statement = connection.prepareStatement(query);
+			statement = getConnection().prepareStatement(query);
 
 			Integer paraNumber = 1;
 			for (ParamJDBC paramJDBC : paramsList) {
@@ -167,7 +172,8 @@ public class PromotionDAO extends AJDBC implements IPromotionDAO {
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		} finally {
-			closeJDBC(connection, statement, resultSet);
+			// closeJDBC(connection, statement, resultSet);
+			closeJDBC(null, statement, resultSet);
 		}
 		return retour;
 	}

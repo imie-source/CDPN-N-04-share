@@ -11,14 +11,13 @@ import java.util.List;
 
 import org.imie.DTO.PersonneDTO;
 import org.imie.DTO.PromotionDTO;
+import org.imie.Transaction.AJDBC;
 import org.imie.exception.ImieException;
 import org.imie.factory.AbstractFactory;
 
 public class PersonneDAO extends AJDBC implements IPersonneDAO {
 
 	AbstractFactory factory;
-
-	Connection connection;
 
 	public PersonneDAO() {
 		super();
@@ -73,7 +72,7 @@ public class PersonneDAO extends AJDBC implements IPersonneDAO {
 					.concat(params)
 					.concat(") returning id, nom, prenom, datenaiss,promotion_id");
 
-			statement = connection.prepareStatement(query);
+			statement = getConnection().prepareStatement(query);
 
 			Integer paraNumber = 1;
 			for (ParamJDBC paramJDBC : paramsList) {
@@ -101,7 +100,7 @@ public class PersonneDAO extends AJDBC implements IPersonneDAO {
 		PersonneDTO retour = null;
 		// Boolean slave = false;
 		try {
-			if (personneToUpdate.getId() == 29) {
+			if (personneToUpdate.getId() == 81) {
 				throw new ImieException("pour de rire");
 			}
 			// if (connection != null) {
@@ -112,7 +111,7 @@ public class PersonneDAO extends AJDBC implements IPersonneDAO {
 			// }
 			String query = "UPDATE personne set nom=?, prenom=?, datenaiss=?, promotion_id=? WHERE id =? returning id,nom,prenom,datenaiss,promotion_id";
 
-			statement = connection.prepareStatement(query);
+			statement = getConnection().prepareStatement(query);
 			statement.setString(1, personneToUpdate.getNom());
 			statement.setString(2, personneToUpdate.getPrenom());
 			statement.setDate(3, new Date(personneToUpdate.getDateNaiss()
@@ -174,7 +173,7 @@ public class PersonneDAO extends AJDBC implements IPersonneDAO {
 		try {
 			// connection = openConnection();
 			String query = "DELETE from personne WHERE id=?";
-			statement = connection.prepareStatement(query);
+			statement = getConnection().prepareStatement(query);
 			statement.setInt(1, personneToDelete.getId());
 
 			retour = statement.executeUpdate();
@@ -201,7 +200,7 @@ public class PersonneDAO extends AJDBC implements IPersonneDAO {
 		List<PersonneDTO> retour = new ArrayList<PersonneDTO>();
 		try {
 			// connection = openConnection();
-			statement = connection.createStatement();
+			statement = getConnection().createStatement();
 			resultSet = statement
 					.executeQuery("SELECT id,nom,prenom,datenaiss,promotion_id FROM personne");
 
@@ -255,7 +254,7 @@ public class PersonneDAO extends AJDBC implements IPersonneDAO {
 				firstRestriction = false;
 			}
 
-			statement = connection.prepareStatement(query);
+			statement = getConnection().prepareStatement(query);
 
 			Integer paramNumber = 1;
 			if (dtoSearched.getNom() != null) {
@@ -332,16 +331,6 @@ public class PersonneDAO extends AJDBC implements IPersonneDAO {
 			retour.setPromotionDTO(promotionDTO);
 		}
 		return retour;
-	}
-
-	@Override
-	public void beginTransaction(Connection connection) {
-		this.connection = connection;
-	}
-
-	@Override
-	public void endTransaction() {
-		this.connection = null;
 	}
 
 }

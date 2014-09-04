@@ -7,13 +7,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import org.imie.DAO.AJDBC;
 import org.imie.DAO.IPersonneDAO;
 import org.imie.DAO.IPromotionDAO;
 import org.imie.DAO.PersonneDAO;
 import org.imie.DAO.PromotionDAO;
 import org.imie.DTO.PersonneDTO;
 import org.imie.DTO.PromotionDTO;
+import org.imie.Transaction.AJDBC;
 import org.imie.exception.ImieException;
 import org.imie.factory.AbstractFactory;
 
@@ -87,11 +87,11 @@ public class EcoleService extends AJDBC implements IEcoleService {
 	@Override
 	public Integer deletePromotion(PromotionDTO dtoToDelete)
 			throws ImieException {
-		Connection connection = null;
+//		Connection connection = null;
 		Integer retour = null;
-		try {
-			connection = openConnection();
-			connection.setAutoCommit(false);
+//		try {
+//			connection = openConnection();
+//			connection.setAutoCommit(false);
 			
 			PersonneDTO personneDTO = new PersonneDTO();
 			personneDTO.setPromotionDTO(dtoToDelete);
@@ -99,22 +99,22 @@ public class EcoleService extends AJDBC implements IEcoleService {
 			List<PersonneDTO> personnes = personneDAO.findByDTO(personneDTO);
 			for (PersonneDTO personneToUpdate : personnes) {
 				personneToUpdate.setPromotionDTO(null);
+				personneDAO.beginTransaction(getConnection());
 				personneDAO.update(personneToUpdate);
+				personneDAO.endTransaction();
 			}
+			promotionDAO.beginTransaction(getConnection());
+			promotionDAO.delete(dtoToDelete);
+			promotionDAO.endTransaction();
 			
-			promotionDAO.delete(dtoToDelete,connection);
-			connection.commit();
-			
-		} catch (SQLException e) {
-			try {
-				connection.rollback();
-			} catch (SQLException e1) {
-				throw new ImieException(e);
-			}
-			throw new RuntimeException(e);
-		} finally {
-			closeJDBC(connection, null, null);
-		}
+//		} catch (SQLException e) {
+////			try {
+////				connection.rollback();
+////			} catch (SQLException e1) {
+////				throw new ImieException(e);
+////			}
+//			throw new ImieException(e);
+//		}
 		return retour;
 	}
 
@@ -122,5 +122,7 @@ public class EcoleService extends AJDBC implements IEcoleService {
 	public List<PromotionDTO> findByDTOPromotion(PromotionDTO dtoSearched) {
 		return promotionDAO.findByDTO(dtoSearched);
 	}
+	
+	
 
 }

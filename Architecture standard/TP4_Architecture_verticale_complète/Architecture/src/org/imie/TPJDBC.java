@@ -14,13 +14,11 @@ import org.imie.factory.Factory1;
 import org.imie.service.IEcoleService;
 
 public class TPJDBC {
-	
-	
 
 	public static void main(String[] args) {
 
-		//IPersonneDAO personneDao = PersonneDAO.getInstance();
-		//IPromotionDAO promotionDao = PromotionDAO.getInstance();
+		// IPersonneDAO personneDao = PersonneDAO.getInstance();
+		// IPromotionDAO promotionDao = PromotionDAO.getInstance();
 		AbstractFactory factory = new Factory1();
 		IEcoleService ecoleService = factory.createEcoleService();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -74,7 +72,8 @@ public class TPJDBC {
 						saisie = scanner.nextLine();
 						lineNumber = Integer.valueOf(saisie);
 						selectedPersonne = dtos.get(lineNumber - 1);
-						deletedLines = ecoleService.deletePersonne(selectedPersonne);
+						deletedLines = ecoleService
+								.deletePersonne(selectedPersonne);
 						System.out.format("%d lignes supprimée(s)\n",
 								deletedLines);
 						break;
@@ -104,19 +103,23 @@ public class TPJDBC {
 						System.out.println("saisir une personne à rechercher");
 						PersonneDTO personneToSearch = typePersonne(scanner,
 								simpleDateFormat);
-						List<PersonneDTO> presonnesFinded = ecoleService.findByDTOPersonne(personneToSearch);
+						List<PersonneDTO> presonnesFinded = ecoleService
+								.findByDTOPersonne(personneToSearch);
 						displayListPersonne(presonnesFinded, simpleDateFormat);
 						break;
 
 					case 6:
 
-						promotionDTOs = ecoleService.findByDTOPromotion(new PromotionDTO());
+						promotionDTOs = ecoleService
+								.findByDTOPromotion(new PromotionDTO());
 						displayListPromotion(promotionDTOs, simpleDateFormat);
 						System.out.println("saisir une promotion à supprimer");
 						saisie = scanner.nextLine();
 						lineNumber = Integer.valueOf(saisie);
+						
 						selectedPromotion = promotionDTOs.get(lineNumber - 1);
-						deletedLines = ecoleService.deletePromotion(selectedPromotion);
+						deletedLines = ecoleService
+								.deletePromotion(selectedPromotion);
 						System.out.format("%d lignes supprimée(s)\n",
 								deletedLines);
 						break;
@@ -127,8 +130,13 @@ public class TPJDBC {
 				}
 			} catch (ImieException e) {
 				System.out.println(e.getMessage());
-				if (e.getCause()!=null){
-					System.out.println("-> ".concat(e.getCause().getMessage()));
+				if (e.getCause() != null) {
+					if (e.getCause().getMessage()!=null) {
+						System.out.println("-> ".concat(e.getCause()
+								.getMessage()));
+					}else{
+						e.printStackTrace();
+					}
 				}
 			} catch (NumberFormatException e) {
 				System.out.println("Menu erroné");
